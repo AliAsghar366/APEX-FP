@@ -5,6 +5,10 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Disable Netlify's asset optimization (minification/bundling) so it doesn't break pre-built Next.js files
+[build.processing]
+  skip_processing = true
+
 [[redirects]]
   from = "/_next/image"
   to = "/.netlify/functions/image"
@@ -51,14 +55,40 @@
   status = 200
 
 [[headers]]
-  for = "/assets/*.mp4"
+  for = "/*.webp"
   [headers.values]
+    Content-Type = "image/webp"
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/*.avif"
+  [headers.values]
+    Content-Type = "image/avif"
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Content-Type = "image/png"
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Content-Type = "image/svg+xml"
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/*.mp4"
+  [headers.values]
+    Content-Type = "video/mp4"
     Accept-Ranges = "bytes"
     Cache-Control = "public, max-age=31536000"
 
 [[headers]]
-  for = "/assets/*.webm"
+  for = "/*.webm"
   [headers.values]
+    Content-Type = "video/webm"
     Accept-Ranges = "bytes"
     Cache-Control = "public, max-age=31536000"
 
@@ -66,3 +96,8 @@
   for = "/_next/static/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
