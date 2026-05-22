@@ -1,0 +1,68 @@
+[build]
+  publish = "site/apexfx.com"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/_next/image"
+  to = "/.netlify/functions/image"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/strapi-proxy"
+  status = 200
+
+[[redirects]]
+  from = "/cdn-cgi/*"
+  to = "/cdn-stub.js"
+  status = 200
+
+[[redirects]]
+  from = "/affiliate"
+  to = "/affiliate.html"
+  status = 200
+
+[[redirects]]
+  from = "/contact-us"
+  to = "/contact-us.html"
+  status = 200
+
+[[redirects]]
+  from = "/direct-to-sim-live"
+  to = "/direct-to-sim-live.html"
+  status = 200
+
+[[redirects]]
+  from = "/how"
+  to = "/how.html"
+  status = 200
+
+[[redirects]]
+  from = "/programs/expert"
+  to = "/programs/expert.html"
+  status = 200
+
+[[redirects]]
+  from = "/programs/standard"
+  to = "/programs/standard.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*.mp4"
+  [headers.values]
+    Accept-Ranges = "bytes"
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/assets/*.webm"
+  [headers.values]
+    Accept-Ranges = "bytes"
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

@@ -1,0 +1,22 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Temp / scripts (not needed in deployment)
+patch_site.py
+fetch_images.py
+fix_all.py
+full_audit.py
+audit_all_pages.py
+download_all_missing.py
+refresh_html.py
+fix_brand_final.py
+fix_fxify.py
+how_live.html
+api_faqs.json
+api_faq_articles.json
+
+# Node
+node_modules/
+.npm/
