@@ -8,9 +8,9 @@ const STRAPI_TOKEN =
   "5dd40e586b5845e8edfcfe564b4e1ede3e73ce21e9d686501a1a508";
 
 exports.handler = async (event) => {
-  const path = event.path.replace(/^\/.netlify\/functions\/strapi-proxy/, "") || "/api";
+  // event.path is the original request path e.g. "/api/articles"
   const qs = event.rawQuery ? "?" + event.rawQuery : "";
-  const url = STRAPI_BASE + "/api" + path + qs;
+  const url = STRAPI_BASE + event.path + qs;
 
   try {
     const res = await fetch(url, {

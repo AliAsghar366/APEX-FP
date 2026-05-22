@@ -5,7 +5,13 @@
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/strapi-proxy" },
     { "source": "/_next/image", "destination": "/api/image" },
-    { "source": "/cdn-cgi/:path*", "destination": "/api/cdn-stub" }
+    { "source": "/cdn-cgi/:path*", "destination": "/api/cdn-stub" },
+    { "source": "/affiliate", "destination": "/affiliate.html" },
+    { "source": "/contact-us", "destination": "/contact-us.html" },
+    { "source": "/direct-to-sim-live", "destination": "/direct-to-sim-live.html" },
+    { "source": "/how", "destination": "/how.html" },
+    { "source": "/programs/expert", "destination": "/programs/expert.html" },
+    { "source": "/programs/standard", "destination": "/programs/standard.html" }
   ],
   "headers": [
     {
