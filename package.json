@@ -1,0 +1,8 @@
+{
+  "name": "apexfx",
+  "version": "1.0.0",
+  "description": "ApexFX static site",
+  "scripts": {
+    "build": "echo 'Static site - files already pre-built in site/apexfx.com'"
+  }
+}
