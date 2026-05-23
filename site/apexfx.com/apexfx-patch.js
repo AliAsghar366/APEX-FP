@@ -10,7 +10,7 @@
     var img=document.createElement('img');
     img.src=LOGO_SRC;
     img.alt='Axio Venturez';
-    img.style.cssText='height:36px;width:auto;display:block;';
+    img.style.cssText='height:72px;width:auto;display:block;';
     return img;
   }
 
@@ -78,6 +78,12 @@
     // Remove floating "Get started today" widget
     document.querySelectorAll('.home-card,.get-started-card_GetStartedCard__E3w93').forEach(function(el){
       if(el.parentNode) el.parentNode.removeChild(el);
+    });
+    // Remove "Get Funded" buttons
+    document.querySelectorAll('a,button').forEach(function(el){
+      if(el.textContent.trim()==='Get Funded'||(el.textContent.trim().startsWith('Get Funded')&&el.textContent.trim().length<20)){
+        if(el.parentNode) el.parentNode.removeChild(el);
+      }
     });
 
     // 2. Fix /_next/image URLs React puts back after re-render
