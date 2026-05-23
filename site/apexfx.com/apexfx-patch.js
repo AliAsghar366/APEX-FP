@@ -54,6 +54,25 @@
   window.addEventListener('load',fix);
   [50,150,400,800,1500].forEach(function(t){setTimeout(fix,t);});
 
+  // 3. On homepage: replace hero background video with rocket video from standard plan
+  if(window.location.pathname==='/'||window.location.pathname==='/index.html'){
+    document.querySelectorAll('source[src*="bg-reencoded.mp4"]').forEach(function(src){
+      src.setAttribute('src','/assets/programs-individual/hero/starter-2.mp4');
+      src.setAttribute('type','video/mp4');
+      var vid=src.parentNode;
+      if(vid&&vid.tagName==='VIDEO'){
+        vid.load();
+        vid.play().catch(function(){});
+      }
+    });
+    // Also handle video[src] directly (some renders inline the src)
+    document.querySelectorAll('video[src*="bg-reencoded.mp4"]').forEach(function(vid){
+      vid.setAttribute('src','/assets/programs-individual/hero/starter-2.mp4');
+      vid.load();
+      vid.play().catch(function(){});
+    });
+  }
+
   // MutationObserver catches every React DOM update
   try{
     new MutationObserver(function(){fix();})
