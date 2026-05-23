@@ -61,7 +61,6 @@
     // 1b. Remove Discord community card if React re-renders it
     document.querySelectorAll('video[src*="discord.mp4"]').forEach(function(vid){
       var card=vid;
-      // Walk up to find the card container (has multiple sibling divs including the video)
       for(var i=0;i<6;i++){
         if(!card.parentNode) break;
         card=card.parentNode;
@@ -69,10 +68,20 @@
       }
       if(card&&card.parentNode) card.parentNode.removeChild(card);
     });
-    // Remove any remaining Discord buttons/links
-    document.querySelectorAll('a[href*="discord.com"]').forEach(function(a){
-      var btn=a.closest('button')||a;
-      if(btn.parentNode) btn.parentNode.removeChild(btn);
+    // Remove backend buttons: Get Funded, Login, Join Us, Trustpilot, payment links
+    var backendSelectors=[
+      'a[href*="trader/register"]',
+      'a[href*="trader/login"]',
+      'a[href*="app.fxifyfutures.com"]',
+      'a[href*="app.apexfx.com"]',
+      'a[href*="trustpilot.com"]',
+      'a[href*="discord.com"]'
+    ];
+    backendSelectors.forEach(function(sel){
+      document.querySelectorAll(sel).forEach(function(a){
+        var btn=a.closest('button')||a;
+        if(btn.parentNode) btn.parentNode.removeChild(btn);
+      });
     });
 
     // 2. Fix /_next/image URLs React puts back after re-render
