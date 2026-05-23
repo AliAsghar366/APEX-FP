@@ -68,21 +68,12 @@
       }
       if(card&&card.parentNode) card.parentNode.removeChild(card);
     });
-    // Remove backend-linked buttons: Get Funded, Login, Trustpilot, Start a Challenge
-    // Target by specific href patterns (register/login/trustpilot only — not broad app.* domain)
+    // Remove backend-linked buttons by specific href only (safe — no text scanning)
     ['a[href*="trader/register"]','a[href*="trader/login"]','a[href*="trustpilot.com"]','a[href*="discord.com"]'].forEach(function(sel){
       document.querySelectorAll(sel).forEach(function(a){
-        var el=a.closest('button')||a.closest('a')||a;
+        var el=a.closest('button')||a;
         if(el.parentNode) el.parentNode.removeChild(el);
       });
-    });
-    // Remove buttons by visible text that link to backend (catches href="#" after JS bundle patch)
-    var backendTexts=['Get Funded','Login','Start a Challenge','Review us on Trustpilot','Become an Affiliate','Get Started (Sign Up)','Get Funded Now'];
-    document.querySelectorAll('button,a.group\\/link').forEach(function(el){
-      var txt=(el.textContent||'').trim();
-      if(backendTexts.some(function(t){return txt.indexOf(t)===0;})){
-        if(el.parentNode) el.parentNode.removeChild(el);
-      }
     });
 
     // 2. Fix /_next/image URLs React puts back after re-render
