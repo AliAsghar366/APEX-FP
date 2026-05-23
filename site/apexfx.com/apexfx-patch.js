@@ -10,7 +10,7 @@
     var img=document.createElement('img');
     img.src=LOGO_SRC;
     img.alt='Axio Venturez';
-    img.style.cssText='height:72px;width:auto;display:block;';
+    img.style.cssText='height:144px;width:auto;display:block;';
     return img;
   }
 
