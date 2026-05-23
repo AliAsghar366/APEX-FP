@@ -92,11 +92,24 @@
     document.querySelectorAll('*').forEach(function(el){
       if(el.childNodes.length===1&&el.childNodes[0].nodeType===3){
         var t=el.childNodes[0];
-        if(t.nodeValue&&(t.nodeValue.indexOf('ApexFX')>-1||t.nodeValue.indexOf('APEXFX')>-1)){
-          t.nodeValue=t.nodeValue.replace(/ApexFX/g,'Axio Venturez').replace(/APEXFX/g,'Axio Venturez');
+        if(t.nodeValue&&(t.nodeValue.indexOf('ApexFX')>-1||t.nodeValue.indexOf('APEXFX')>-1||t.nodeValue.indexOf('FXIFY')>-1||t.nodeValue.indexOf('Fxify')>-1)){
+          t.nodeValue=t.nodeValue.replace(/ApexFX/g,'Axio Venturez').replace(/APEXFX/g,'Axio Venturez').replace(/FXIFY/g,'Axio Venturez').replace(/Fxify/g,'Axio Venturez');
         }
       }
     });
+
+    // 4. Replace hero headline if React restores original
+    if(IS_HOME){
+      var h1=document.querySelector('h1');
+      if(h1&&h1.textContent.indexOf('Do you have the talent')>-1){
+        h1.innerHTML='Your Trusted Partner in Procurement &amp; Technology';
+      }
+      document.querySelectorAll('p').forEach(function(p){
+        if(p.textContent.indexOf('Showcase your skills')>-1){
+          p.textContent='Delivering tailored, innovative, and cost-effective solutions in government & defense procurement, smart security, IT & software development, and infrastructure.';
+        }
+      });
+    }
   }
 
   function runAll(){fix();ensureHeroVideo();}
