@@ -88,15 +88,15 @@
       if(ss.indexOf('/_next/image')>-1) img.setAttribute('srcset',fixUrl(ss));
     });
 
-    // 3. Replace any brand text React re-inserts
-    document.querySelectorAll('*').forEach(function(el){
-      if(el.childNodes.length===1&&el.childNodes[0].nodeType===3){
-        var t=el.childNodes[0];
-        if(t.nodeValue&&(t.nodeValue.indexOf('ApexFX')>-1||t.nodeValue.indexOf('APEXFX')>-1||t.nodeValue.indexOf('FXIFY')>-1||t.nodeValue.indexOf('Fxify')>-1)){
-          t.nodeValue=t.nodeValue.replace(/ApexFX/g,'Axio Venturez').replace(/APEXFX/g,'Axio Venturez').replace(/FXIFY/g,'Axio Venturez').replace(/Fxify/g,'Axio Venturez');
-        }
+    // 3. Replace any brand text React re-inserts — walk ALL text nodes
+    var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null,false);
+    var node;
+    while((node=walker.nextNode())){
+      var v=node.nodeValue;
+      if(v&&(v.indexOf('ApexFX')>-1||v.indexOf('APEXFX')>-1||v.indexOf('FXIFY')>-1||v.indexOf('Fxify')>-1||v.indexOf('ApexFP')>-1||v.indexOf('APEXFP')>-1)){
+        node.nodeValue=v.replace(/ApexFX/g,'Axio Venturez').replace(/APEXFX/g,'Axio Venturez').replace(/FXIFY/g,'Axio Venturez').replace(/Fxify/g,'Axio Venturez').replace(/ApexFP/g,'Axio Venturez').replace(/APEXFP/g,'Axio Venturez');
       }
-    });
+    }
 
     // 4. Replace hero headline if React restores original
     if(IS_HOME){
