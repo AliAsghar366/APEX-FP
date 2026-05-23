@@ -68,12 +68,16 @@
       }
       if(card&&card.parentNode) card.parentNode.removeChild(card);
     });
-    // Remove backend-linked buttons by specific href only (safe — no text scanning)
+    // Remove backend-linked buttons and floating GetStartedCard widget
     ['a[href*="trader/register"]','a[href*="trader/login"]','a[href*="trustpilot.com"]','a[href*="discord.com"]'].forEach(function(sel){
       document.querySelectorAll(sel).forEach(function(a){
         var el=a.closest('button')||a;
         if(el.parentNode) el.parentNode.removeChild(el);
       });
+    });
+    // Remove floating "Get started today" widget
+    document.querySelectorAll('.home-card,.get-started-card_GetStartedCard__E3w93').forEach(function(el){
+      if(el.parentNode) el.parentNode.removeChild(el);
     });
 
     // 2. Fix /_next/image URLs React puts back after re-render
