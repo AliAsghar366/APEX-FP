@@ -4,7 +4,7 @@
   // This script fixes logo, image URLs, and hero video after every React render cycle.
 
   var IS_HOME=window.location.pathname==='/'||window.location.pathname==='/index.html';
-  var LOGO_SRC='/assets/axioventurez-logo.jpeg';
+  var LOGO_SRC='/assets/axioventurez-logo.png';
 
   function makeLogo(){
     var img=document.createElement('img');
