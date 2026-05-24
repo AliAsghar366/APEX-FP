@@ -1,15 +1,31 @@
 (function(){
-  // Axio Venturez post-hydration patch
-  // React error #418 causes re-render from original JS bundle (FXIFY logo + /_next/image URLs).
-  // This script fixes logo, image URLs, and hero video after every React render cycle.
+  // Axio Ventures post-hydration patch
+  // React error #418 causes re-render from original JS bundle.
+  // This script fixes logo, image URLs, nav labels, and hero video after every React render.
 
-  var IS_HOME=window.location.pathname==='/'||window.location.pathname==='/index.html';
+  var PATH=window.location.pathname;
+  var IS_HOME=PATH==='/'||PATH==='/index.html';
   var LOGO_SRC='/assets/axioventurez-logo.png';
+
+  // Nav label map: what React renders → what we want
+  var NAV_MAP={
+    'How it Works':'About Us',
+    'How It Works':'About Us',
+    'Plans':'Services',
+    'Standard plan':'Defense & Gov',
+    'Expert Plan':'Turnkey Solutions',
+    'Affiliate Program':'Smart Security',
+    'Affiliate':'Smart Security',
+    'Direct to Sim Live':'Technology Solutions',
+    'FAQs':'FAQ',
+    'Academy':'Smart Security',
+    'Get Started':'Contact Us'
+  };
 
   function makeLogo(){
     var img=document.createElement('img');
     img.src=LOGO_SRC;
-    img.alt='Axio Venturez';
+    img.alt='Axio Ventures';
     img.style.cssText='height:144px;width:auto;display:block;';
     return img;
   }
@@ -53,12 +69,12 @@
   }
 
   function fix(){
-    // 1. Replace FXIFY/ApexFX SVG logos with Axio Venturez logo image
+    // 1. Replace SVG logos with Axio Ventures logo image
     document.querySelectorAll('svg[viewBox="0 0 190 22"], svg[viewBox="0 0 130 22"]').forEach(function(s){
       s.parentNode.replaceChild(makeLogo(),s);
     });
 
-    // 1b. Remove Discord community card if React re-renders it
+    // 2. Remove Discord community card
     document.querySelectorAll('video[src*="discord.mp4"]').forEach(function(vid){
       var card=vid;
       for(var i=0;i<6;i++){
@@ -68,25 +84,29 @@
       }
       if(card&&card.parentNode) card.parentNode.removeChild(card);
     });
-    // Remove backend-linked buttons and floating GetStartedCard widget
+
+    // 3. Remove backend-linked buttons
     ['a[href*="trader/register"]','a[href*="trader/login"]','a[href*="trustpilot.com"]','a[href*="discord.com"]'].forEach(function(sel){
       document.querySelectorAll(sel).forEach(function(a){
         var el=a.closest('button')||a;
         if(el.parentNode) el.parentNode.removeChild(el);
       });
     });
-    // Remove floating "Get started today" widget
+
+    // 4. Remove floating GetStartedCard widget
     document.querySelectorAll('.home-card,.get-started-card_GetStartedCard__E3w93').forEach(function(el){
       if(el.parentNode) el.parentNode.removeChild(el);
     });
-    // Remove "Get Funded" buttons
+
+    // 5. Remove "Get Funded" buttons
     document.querySelectorAll('a,button').forEach(function(el){
-      if(el.textContent.trim()==='Get Funded'||(el.textContent.trim().startsWith('Get Funded')&&el.textContent.trim().length<20)){
+      var t=el.textContent.trim();
+      if(t==='Get Funded'||(t.startsWith('Get Funded')&&t.length<20)){
         if(el.parentNode) el.parentNode.removeChild(el);
       }
     });
 
-    // 2. Fix /_next/image URLs React puts back after re-render
+    // 6. Fix /_next/image URLs
     document.querySelectorAll('img').forEach(function(img){
       var src=img.getAttribute('src')||'';
       var ss=img.getAttribute('srcset')||'';
@@ -99,20 +119,27 @@
       if(ss.indexOf('/_next/image')>-1) img.setAttribute('srcset',fixUrl(ss));
     });
 
-    // 3. Replace any brand text React re-inserts — walk ALL text nodes
+    // 7. Text node replacement — brand names + nav labels
     var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null,false);
     var node;
     while((node=walker.nextNode())){
       var v=node.nodeValue;
-      if(v&&(v.indexOf('ApexFX')>-1||v.indexOf('APEXFX')>-1||v.indexOf('FXIFY')>-1||v.indexOf('Fxify')>-1||v.indexOf('ApexFP')>-1||v.indexOf('APEXFP')>-1)){
-        node.nodeValue=v.replace(/ApexFX/g,'Axio Venturez').replace(/APEXFX/g,'Axio Venturez').replace(/FXIFY/g,'Axio Venturez').replace(/Fxify/g,'Axio Venturez').replace(/ApexFP/g,'Axio Venturez').replace(/APEXFP/g,'Axio Venturez');
+      if(!v) continue;
+      // Brand names
+      if(v.indexOf('ApexFX')>-1||v.indexOf('APEXFX')>-1||v.indexOf('FXIFY')>-1||v.indexOf('Fxify')>-1||v.indexOf('ApexFP')>-1||v.indexOf('APEXFP')>-1){
+        v=v.replace(/ApexFX/g,'Axio Ventures').replace(/APEXFX/g,'Axio Ventures').replace(/FXIFY/g,'Axio Ventures').replace(/Fxify/g,'Axio Ventures').replace(/ApexFP/g,'Axio Ventures').replace(/APEXFP/g,'Axio Ventures');
+        node.nodeValue=v;
+      }
+      // Nav labels
+      for(var key in NAV_MAP){
+        if(v===key){ node.nodeValue=NAV_MAP[key]; break; }
       }
     }
 
-    // 4. Replace hero headline if React restores original
+    // 8. Fix hero headline if React restores original
     if(IS_HOME){
       var h1=document.querySelector('h1');
-      if(h1&&h1.textContent.indexOf('Do you have the talent')>-1){
+      if(h1&&(h1.textContent.indexOf('Do you have the talent')>-1||h1.textContent.indexOf('funded trader')>-1)){
         h1.innerHTML='Your Trusted Partner in Procurement &amp; Technology';
       }
       document.querySelectorAll('p').forEach(function(p){
@@ -121,6 +148,17 @@
         }
       });
     }
+
+    // 9. Fix contact email if React restores original
+    var walker2=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null,false);
+    while((node=walker2.nextNode())){
+      if(node.nodeValue&&node.nodeValue.indexOf('support@apexfx.com')>-1){
+        node.nodeValue=node.nodeValue.replace(/support@apexfx\.com/g,'info@axioventures.com');
+      }
+    }
+    document.querySelectorAll('a[href*="support@apexfx"]').forEach(function(a){
+      a.href='mailto:info@axioventures.com';
+    });
   }
 
   function runAll(){fix();ensureHeroVideo();}
