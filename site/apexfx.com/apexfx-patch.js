@@ -23,11 +23,29 @@
   };
 
   function makeLogo(){
+    var a=document.createElement('a');
+    a.href='/';
+    a.style.cssText='display:inline-block;cursor:pointer;';
     var img=document.createElement('img');
     img.src=LOGO_SRC;
     img.alt='Axio Ventures';
     img.style.cssText='height:144px;width:auto;display:block;';
-    return img;
+    a.appendChild(img);
+    return a;
+  }
+
+  function removeHomeOnlySections(){
+    if(!IS_HOME) return;
+    // Remove comparison table section (Excellence in Every Aspect)
+    var adv=document.getElementById('advantage');
+    if(adv&&adv.parentNode) adv.parentNode.removeChild(adv);
+    // Remove plan cards section (Choose what's best for you)
+    var plans=document.getElementById('plans');
+    if(plans&&plans.parentNode) plans.parentNode.removeChild(plans);
+    // Extra: remove any element containing 'Choose what' text
+    document.querySelectorAll('div[id="plans"],section[id="plans"]').forEach(function(el){
+      if(el.parentNode) el.parentNode.removeChild(el);
+    });
   }
 
   function ensureHeroVideo(){
@@ -69,9 +87,28 @@
   }
 
   function fix(){
-    // 1. Replace SVG logos with Axio Ventures logo image
+    // 1. Replace SVG logos with Axio Ventures logo (wrapped in <a href="/">)
     document.querySelectorAll('svg[viewBox="0 0 190 22"], svg[viewBox="0 0 130 22"]').forEach(function(s){
-      s.parentNode.replaceChild(makeLogo(),s);
+      var parent=s.parentNode;
+      if(!parent) return;
+      var newEl=makeLogo();
+      // If parent is already an <a>, just replace the SVG with the img child
+      if(parent.tagName==='A'){
+        parent.href='/';
+        parent.replaceChild(newEl.querySelector('img'),s);
+      } else {
+        parent.replaceChild(newEl,s);
+      }
+    });
+    // Also ensure any already-injected logo img is inside an <a href="/">
+    document.querySelectorAll('img[src*="axioventurez-logo"]').forEach(function(img){
+      if(img.parentNode&&img.parentNode.tagName!=='A'){
+        var a=document.createElement('a');
+        a.href='/';
+        a.style.cssText='display:inline-block;cursor:pointer;';
+        img.parentNode.insertBefore(a,img);
+        a.appendChild(img);
+      }
     });
 
     // 2. Remove Discord community card
@@ -161,7 +198,7 @@
     });
   }
 
-  function runAll(){fix();ensureHeroVideo();}
+  function runAll(){fix();ensureHeroVideo();removeHomeOnlySections();}
 
   runAll();
   document.addEventListener('DOMContentLoaded',runAll);
