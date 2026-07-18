@@ -1,26 +1,7 @@
-// Vercel: /api/* -> forward to Strapi CMS
-
-const STRAPI_BASE = "https://best-crystal-311b010c7b.strapiapp.com";
-const STRAPI_TOKEN =
-  "ece0f68d62142b4fe9bff594b8a4f023849f664b03b8e578092544214b9791a2b87" +
-  "d5ee018c43acf683dbf272f3106e39d8ced21f879cd94efbb62dc40c29c34b632df" +
-  "cb2b4c5ed4f59513b94d48c702ba7491217c6a42ea7c09d5944c21b0b4979cfcfe4" +
-  "5dd40e586b5845e8edfcfe564b4e1ede3e73ce21e9d686501a1a508";
+// Vercel: /api/* -> no live CMS backend, return an empty Strapi-shaped response.
+// This site has no real CMS content of its own, so there is nothing to fetch;
+// returning instantly avoids a multi-second round trip to a third-party backend.
 
 export default async function handler(req, res) {
-  const path = req.url.replace(/^\/api/, "/api");
-  const url = STRAPI_BASE + path;
-
-  try {
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${STRAPI_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    res.status(response.status).json(data);
-  } catch (err) {
-    res.status(200).json({ data: [], meta: { pagination: {} } });
-  }
+  res.status(200).json({ data: [], meta: { pagination: {} } });
 }

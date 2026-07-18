@@ -123,7 +123,7 @@
     });
 
     // 3. Remove backend-linked buttons
-    ['a[href*="trader/register"]','a[href*="trader/login"]','a[href*="trustpilot.com"]','a[href*="discord.com"]'].forEach(function(sel){
+    ['a[href*="trader/register"]','a[href*="trader/login"]','a[href*="trustpilot.com"]','a[href*="discord.com"]','a[href*="intercom.help"]','a[href="/academy"]','a[href="https://app.fxifyfutures.com/"]'].forEach(function(sel){
       document.querySelectorAll(sel).forEach(function(a){
         var el=a.closest('button')||a;
         if(el.parentNode) el.parentNode.removeChild(el);

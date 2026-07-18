@@ -5,7 +5,7 @@ Features:
 - Serves all static files with correct MIME types
 - Handles HTTP range requests (needed for <video> elements)
 - Next.js routing: /about -> about.html or about/index.html
-- Proxies Strapi API calls to the live server (with caching)
+- Returns an empty Strapi-shaped response for /api/ and /uploads/ (no live backend)
 - Serves _next/data/ routes for client-side navigation
 - CORS headers for all responses
 - Graceful 404 for missing files
@@ -17,19 +17,10 @@ import os
 import sys
 import mimetypes
 import urllib.parse
-import urllib.request
 import json
-import threading
 
 PORT = 3000
 SITE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "site", "apexfx.com")
-STRAPI_BASE = "https://best-crystal-311b010c7b.strapiapp.com"
-STRAPI_TOKEN = (
-    "ece0f68d62142b4fe9bff594b8a4f023849f664b03b8e578092544214b9791a2b87d5ee018c43acf"
-    "683dbf272f3106e39d8ced21f879cd94efbb62dc40c29c34b632dfcb2b4c5ed4f59513b94d48c702"
-    "ba7491217c6a42ea7c09d5944c21b0b4979cfcfe45dd40e586b5845e8edfcfe564b4e1ede3e73ce2"
-    "1e9d686501a1a508"
-)
 
 # Register extra MIME types
 for ext, mime in [
@@ -51,34 +42,17 @@ for ext, mime in [
 ]:
     mimetypes.add_type(mime, ext)
 
-# Simple in-memory API cache
-_api_cache: dict[str, bytes] = {}
-_cache_lock = threading.Lock()
+_EMPTY_STRAPI_RESPONSE = json.dumps({"data": [], "meta": {"pagination": {}}}).encode()
 
 
 def proxy_strapi(path: str) -> tuple[int, bytes, str]:
-    """Forward API request to live Strapi, cache result."""
-    with _cache_lock:
-        if path in _api_cache:
-            return 200, _api_cache[path], "application/json"
-    url = STRAPI_BASE + path
-    try:
-        req = urllib.request.Request(
-            url,
-            headers={
-                "Authorization": f"Bearer {STRAPI_TOKEN}",
-                "User-Agent": "Mozilla/5.0",
-            },
-        )
-        with urllib.request.urlopen(req, timeout=10) as r:
-            data = r.read()
-        with _cache_lock:
-            _api_cache[path] = data
-        return r.status, data, "application/json"
-    except Exception as e:
-        # Return empty Strapi-shaped response so React doesn't crash
-        empty = json.dumps({"data": [], "meta": {"pagination": {}}}).encode()
-        return 200, empty, "application/json"
+    """Return an empty Strapi-shaped response instantly.
+
+    This site has no real CMS content of its own, so there is nothing to fetch.
+    Previously this proxied live to a third-party Strapi instance, which added
+    a multi-second round trip to every page load for content that was never used.
+    """
+    return 200, _EMPTY_STRAPI_RESPONSE, "application/json"
 
 
 class ApexFXHandler(http.server.BaseHTTPRequestHandler):
