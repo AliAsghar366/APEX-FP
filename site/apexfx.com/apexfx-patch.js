@@ -6,6 +6,7 @@
   var PATH=window.location.pathname;
   var IS_HOME=PATH==='/'||PATH==='/index.html';
   var LOGO_SRC='/assets/axioventurez-logo.png';
+  var ICON_SRC='/assets/axioventurez-icon.png';
 
   // Nav label map: what React renders → what we want
   var NAV_MAP={
@@ -22,14 +23,14 @@
     'Get Started':'Contact Us'
   };
 
-  function makeLogo(){
+  function makeLogo(src){
     var a=document.createElement('a');
     a.href='/';
-    a.style.cssText='display:inline-block;cursor:pointer;';
+    a.style.cssText='display:inline-block;cursor:pointer;height:100%;';
     var img=document.createElement('img');
-    img.src=LOGO_SRC;
+    img.src=src;
     img.alt='Axio Ventures';
-    img.style.cssText='height:144px;width:auto;display:block;';
+    img.style.cssText='height:100%;width:auto;display:block;';
     a.appendChild(img);
     return a;
   }
@@ -88,27 +89,39 @@
 
   function fix(){
     // 1. Replace SVG logos with Axio Ventures logo (wrapped in <a href="/">)
+    // Header slot (wide) gets the full logo; footer slot (compact) gets the icon-only
+    // mark so it doesn't overflow its much smaller container and overlap nearby text.
+    // Distinguished by the actual container class, not viewBox (both slots share viewBoxes).
     document.querySelectorAll('svg[viewBox="0 0 190 22"], svg[viewBox="0 0 130 22"]').forEach(function(s){
       var parent=s.parentNode;
       if(!parent) return;
-      var newEl=makeLogo();
-      // If parent is already an <a>, just replace the SVG with the img child
+      var isFooter = !!(s.closest && s.closest('.footer_Footer_info_logo__FePTR'));
+      var src = isFooter ? ICON_SRC : LOGO_SRC;
+      var newEl=makeLogo(src);
       if(parent.tagName==='A'){
+        // Parent anchor already has its own CSS-class height (e.g. header_Header_logo);
+        // don't override it with an inline style, or height:100% loses that reference
+        // and falls back to the image's natural size.
         parent.href='/';
         parent.replaceChild(newEl.querySelector('img'),s);
       } else {
         parent.replaceChild(newEl,s);
       }
     });
-    // Also ensure any already-injected logo img is inside an <a href="/">
-    document.querySelectorAll('img[src*="axioventurez-logo"]').forEach(function(img){
-      if(img.parentNode&&img.parentNode.tagName!=='A'){
-        var a=document.createElement('a');
+    // Also ensure any already-injected logo/icon img is inside an <a href="/"> and sized to its container
+    document.querySelectorAll('img[src*="axioventurez-logo"], img[src*="axioventurez-icon"]').forEach(function(img){
+      img.style.height='100%';
+      img.style.width='auto';
+      var a=img.parentNode;
+      if(a&&a.tagName!=='A'){
+        a=document.createElement('a');
         a.href='/';
-        a.style.cssText='display:inline-block;cursor:pointer;';
+        a.style.cssText='display:inline-block;cursor:pointer;height:100%;';
         img.parentNode.insertBefore(a,img);
         a.appendChild(img);
       }
+      // If already wrapped in an <a>, leave its height alone — it may carry its
+      // own CSS-class sizing (e.g. header_Header_logo) that inline 100% would break.
     });
 
     // 2. Remove Discord community card
