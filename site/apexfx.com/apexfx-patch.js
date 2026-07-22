@@ -1,4 +1,55 @@
 (function(){
+  // Block leftover FXIFY tracking/ads infrastructure (GTM, Google Ads conversion,
+  // DoubleClick, Microsoft Clarity, TikTok Pixel, Twitter Ads, Intercom widget).
+  // These still fire on every page view and send Axio Ventures' visitor data to
+  // FXIFY's own analytics/ad accounts — and the failed/slow external connection
+  // attempts were a major contributor to page load time.
+  var BLOCKED_HOSTS=['gtm.fxifyfutures.com','googletagmanager.com','google-analytics.com',
+    'doubleclick.net','google.com/ccm','analytics.tiktok.com','ads-twitter.com',
+    'analytics.twitter.com','t.co/i/','clarity.ms','intercom.io'];
+  function isBlocked(url){
+    if(!url) return false;
+    url=String(url);
+    for(var i=0;i<BLOCKED_HOSTS.length;i++){ if(url.indexOf(BLOCKED_HOSTS[i])>-1) return true; }
+    return false;
+  }
+  function guardSrcProperty(proto){
+    var d=Object.getOwnPropertyDescriptor(proto,'src');
+    if(!d||!d.set) return;
+    Object.defineProperty(proto,'src',{
+      get:d.get,
+      set:function(value){ if(isBlocked(value)) return; d.set.call(this,value); },
+      configurable:true
+    });
+  }
+  if(window.HTMLScriptElement) guardSrcProperty(HTMLScriptElement.prototype);
+  if(window.HTMLImageElement) guardSrcProperty(HTMLImageElement.prototype);
+  if(window.HTMLIFrameElement) guardSrcProperty(HTMLIFrameElement.prototype);
+  var origSetAttribute=Element.prototype.setAttribute;
+  Element.prototype.setAttribute=function(name,value){
+    if(name==='src'&&isBlocked(value)) return;
+    return origSetAttribute.apply(this,arguments);
+  };
+  if(window.fetch){
+    var origFetch=window.fetch;
+    window.fetch=function(input){
+      var url=typeof input==='string'?input:(input&&input.url);
+      if(isBlocked(url)) return Promise.resolve(new Response(null,{status:204}));
+      return origFetch.apply(this,arguments);
+    };
+  }
+  if(navigator.sendBeacon){
+    var origSendBeacon=navigator.sendBeacon;
+    navigator.sendBeacon=function(url){ if(isBlocked(url)) return true; return origSendBeacon.apply(navigator,arguments); };
+  }
+  var origXhrOpen=XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open=function(method,url){
+    if(isBlocked(url)){ this.send=function(){}; url='about:blank'; }
+    return origXhrOpen.apply(this,arguments);
+  };
+  window.dataLayer=window.dataLayer||[];
+  window.dataLayer.push=function(){};
+
   // Axio Ventures post-hydration patch
   // React error #418 causes re-render from original JS bundle.
   // This script fixes logo, image URLs, nav labels, and hero video after every React render.
