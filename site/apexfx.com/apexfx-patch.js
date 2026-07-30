@@ -56,8 +56,32 @@
 
   var PATH=window.location.pathname;
   var IS_HOME=PATH==='/'||PATH==='/index.html';
+  var IS_ABOUT=PATH==='/how.html'||PATH==='/how';
+  var IS_SERVICES=PATH==='/programs/standard.html'||PATH==='/programs/expert.html'||PATH==='/programs/standard'||PATH==='/programs/expert'||PATH==='/affiliate.html'||PATH==='/affiliate'||PATH==='/direct-to-sim-live.html'||PATH==='/direct-to-sim-live'||PATH==='/contact-us.html'||PATH==='/contact-us';
   var LOGO_SRC='/assets/axioventurez-logo.png';
   var ICON_SRC='/assets/axioventurez-icon.png';
+
+  // Inject aggressive CSS to hide unwanted elements immediately
+  var hideStyle=document.createElement('style');
+  hideStyle.textContent='\
+    /* Hide newsletter sections */\
+    [class*="Newsletter"], [class*="newsletter"], [id*="newsletter"] { display: none !important; visibility: hidden !important; opacity: 0 !important; height: 0 !important; overflow: hidden !important; position: absolute !important; left: -9999px !important; }\
+    /* Hide payout sections */\
+    [class*="payout"], [id*="payout"] { display: none !important; visibility: hidden !important; opacity: 0 !important; height: 0 !important; overflow: hidden !important; position: absolute !important; left: -9999px !important; }\
+    /* Hide subscribe sections */\
+    [class*="subscribe"], [id*="subscribe"] { display: none !important; visibility: hidden !important; opacity: 0 !important; height: 0 !important; overflow: hidden !important; position: absolute !important; left: -9999px !important; }\
+    /* Hide verified sections */\
+    [class*="verified"], [id*="verified"] { display: none !important; visibility: hidden !important; opacity: 0 !important; height: 0 !important; overflow: hidden !important; position: absolute !important; left: -9999px !important; }\
+    /* Hide Get Started sections */\
+    [class*="GetStarted"], [class*="get-started"], [id*="get-started"] { display: none !important; visibility: hidden !important; opacity: 0 !important; height: 0 !important; overflow: hidden !important; position: absolute !important; left: -9999px !important; }\
+    /* Hide join section */\
+    [class*="Join"], [id*="join"] { display: none !important; visibility: hidden !important; opacity: 0 !important; height: 0 !important; overflow: hidden !important; position: absolute !important; left: -9999px !important; }\
+    /* Hide 100% verified payouts text specifically */\
+    section:has(*:contains("100%")), section:has(*:contains("100 percent")), section:has(*:contains("verified payouts")) { display: none !important; }\
+    /* Scale logo to 2.5x in header and footer */\
+    header img[src*="axioventurez"], footer img[src*="axioventurez"], nav img[src*="axioventurez"] { transform: scale(2.5) !important; transform-origin: left center !important; }\
+  ';
+  document.head.appendChild(hideStyle);
 
   // Nav label map: what React renders → what we want
   var NAV_MAP={
@@ -101,7 +125,7 @@
   }
 
   function ensureHeroVideo(){
-    if(!IS_HOME) return;
+    // Apply to all pages including technology solution
     var ROCKET='/assets/programs-individual/hero/starter-2.mp4';
     var existing=document.getElementById('apexfx-hero-bg');
     var section=document.querySelector('section.flex.flex-col.relative');
@@ -199,6 +223,127 @@
       if(el.parentNode) el.parentNode.removeChild(el);
     });
 
+    // 4.5. Remove newsletter subscription section (site-wide) - more aggressive
+    document.querySelectorAll('*').forEach(function(el){
+      var text=el.textContent||'';
+      if(text.toLowerCase().indexOf('subscribe to our newsletter')>-1||text.toLowerCase().indexOf('newsletter')>-1){
+        var section=el;
+        for(var i=0;i<15;i++){
+          if(!section.parentNode) break;
+          section=section.parentNode;
+          if(section.tagName==='SECTION'||section.tagName==='DIV'||section.className.indexOf('Newsletter')>-1||section.className.indexOf('newsletter')>-1){
+            section.style.display='none';
+            if(section.parentNode) section.parentNode.removeChild(section);
+            break;
+          }
+        }
+      }
+    });
+
+    // 4.6. Remove successful payout section and "100 percent verified payouts"
+    document.querySelectorAll('*').forEach(function(el){
+      var text=el.textContent||'';
+      if(text.toLowerCase().indexOf('successful payout')>-1||text.toLowerCase().indexOf('payout')>-1||text.toLowerCase().indexOf('100 percent verified payouts')>-1||text.toLowerCase().indexOf('100% verified payouts')>-1){
+        var section=el;
+        for(var i=0;i<15;i++){
+          if(!section.parentNode) break;
+          section=section.parentNode;
+          if(section.tagName==='SECTION'||section.tagName==='DIV'||section.className.indexOf('payout')>-1){
+            section.style.display='none';
+            if(section.parentNode) section.parentNode.removeChild(section);
+            break;
+          }
+        }
+      }
+    });
+
+    // 4.7. Remove "Get started with Axio Ventures" text/sections (site-wide) - more aggressive
+    document.querySelectorAll('*').forEach(function(el){
+      var text=el.textContent||'';
+      if(text.toLowerCase().indexOf('get started with axio ventures')>-1||text.toLowerCase().indexOf('get started with')>-1){
+        var section=el;
+        for(var i=0;i<15;i++){
+          if(!section.parentNode) break;
+          section=section.parentNode;
+          if(section.tagName==='SECTION'||section.tagName==='DIV'||section.tagName==='FORM'){
+            section.style.display='none';
+            if(section.parentNode) section.parentNode.removeChild(section);
+            break;
+          }
+        }
+      }
+    });
+
+    // 4.8. CSS-based hiding as fallback
+    var style=document.createElement('style');
+    style.textContent='\
+      [class*="Newsletter"], [class*="newsletter"], [id*="newsletter"] { display: none !important; }\
+      [class*="payout"], [id*="payout"] { display: none !important; }\
+      [class*="subscribe"], [id*="subscribe"] { display: none !important; }\
+      [class*="verified"], [id*="verified"] { display: none !important; }\
+    ';
+    document.head.appendChild(style);
+
+    // 4.9. Additional text-based removal for newsletter
+    document.querySelectorAll('section, div, form').forEach(function(el){
+      var html=el.innerHTML||'';
+      if(html.toLowerCase().indexOf('subscribe to our newsletter')>-1){
+        el.style.display='none';
+        if(el.parentNode) el.parentNode.removeChild(el);
+      }
+    });
+
+    // 4.10. Remove "100 percent verified payouts" and similar text from main page
+    document.querySelectorAll('section, div, p, span, h1, h2, h3, h4, h5, h6').forEach(function(el){
+      var text=el.textContent||'';
+      if(text.toLowerCase().indexOf('100 percent verified payouts')>-1||text.toLowerCase().indexOf('100% verified payouts')>-1||text.toLowerCase().indexOf('verified payouts')>-1){
+        var section=el;
+        for(var i=0;i<10;i++){
+          if(!section.parentNode) break;
+          section=section.parentNode;
+          if(section.tagName==='SECTION'||section.tagName==='DIV'){
+            section.style.display='none';
+            if(section.parentNode) section.parentNode.removeChild(section);
+            break;
+          }
+        }
+      }
+    });
+
+    // 4.11. Remove "Choose best for you" or "Choose what's best for you" text
+    document.querySelectorAll('section, div, p, span, h1, h2, h3, h4, h5, h6').forEach(function(el){
+      var text=el.textContent||'';
+      if(text.toLowerCase().indexOf('choose best for you')>-1||text.toLowerCase().indexOf('choose what\'s best for you')>-1||text.toLowerCase().indexOf('choose what')>-1){
+        var section=el;
+        for(var i=0;i<15;i++){
+          if(!section.parentNode) break;
+          section=section.parentNode;
+          if(section.tagName==='SECTION'||section.tagName==='DIV'){
+            section.style.display='none';
+            if(section.parentNode) section.parentNode.removeChild(section);
+            break;
+          }
+        }
+      }
+    });
+
+    // 4.12. Remove "want to be our affiliate" text
+    document.querySelectorAll('section, div, p, span, h1, h2, h3, h4, h5, h6').forEach(function(el){
+      var text=el.textContent||'';
+      if(text.toLowerCase().indexOf('want to be our affiliate')>-1||text.toLowerCase().indexOf('become an affiliate')>-1||text.toLowerCase().indexOf('affiliate program')>-1){
+        var section=el;
+        for(var i=0;i<15;i++){
+          if(!section.parentNode) break;
+          section=section.parentNode;
+          if(section.tagName==='SECTION'||section.tagName==='DIV'){
+            section.style.display='none';
+            if(section.parentNode) section.parentNode.removeChild(section);
+            break;
+          }
+        }
+      }
+    });
+
     // 5. Remove "Get Funded" buttons
     document.querySelectorAll('a,button').forEach(function(el){
       var t=el.textContent.trim();
@@ -260,14 +405,250 @@
     document.querySelectorAll('a[href*="support@apexfx"]').forEach(function(a){
       a.href='mailto:info@axioventures.com';
     });
+
+    // 10. Replace About Us page content with Axio Ventures content
+    if(IS_ABOUT){
+      // Replace all headings
+      document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(function(el){
+        var text=el.textContent||'';
+        // Replace main heading
+        if(text.indexOf('How it Works')>-1||text.indexOf('How It Works')>-1){
+          el.textContent='Welcome to Axio Ventures';
+        }
+        // Replace section headings
+        if(text.indexOf('Our Mission')>-1){
+          el.textContent='Our Mission';
+        }
+        if(text.indexOf('Our Vision')>-1){
+          el.textContent='Our Vision';
+        }
+        if(text.indexOf('Our Aim')>-1){
+          el.textContent='Our Aim';
+        }
+        if(text.indexOf('Quality Services')>-1){
+          el.textContent='Quality Services Is Our Main Objective';
+        }
+        if(text.indexOf('Personalized')>-1){
+          el.textContent='Personalized Solutions';
+        }
+        if(text.indexOf('Innovation')>-1){
+          el.textContent='Innovation Driven';
+        }
+        if(text.indexOf('Trusted')>-1){
+          el.textContent='Trusted Expertise';
+        }
+        // Replace service section headings
+        if(text.indexOf('Procurement')>-1&&!text.indexOf('Services')>-1){
+          el.textContent='Procurement & Construction Services';
+        }
+        if(text.indexOf('Technology')>-1){
+          el.textContent='Smart Technology Solutions';
+        }
+        // Replace subsection headings
+        if(text.indexOf('Government')>-1||text.indexOf('Corporate')>-1){
+          el.textContent='Procurement for Government & Corporate Projects';
+        }
+        if(text.indexOf('Construction')>-1){
+          el.textContent='Construction & Civil Engineering Services';
+        }
+        if(text.indexOf('Telecom')>-1){
+          el.textContent='Telecom Infrastructure Development';
+        }
+        if(text.indexOf('Turnkey')>-1){
+          el.textContent='Turnkey Solutions';
+        }
+        if(text.indexOf('Security Alarm')>-1){
+          el.textContent='Security Alarm Systems';
+        }
+        if(text.indexOf('AI Camera')>-1){
+          el.textContent='Smart AI Cameras';
+        }
+        if(text.indexOf('Electric')>-1){
+          el.textContent='Electric Fencing';
+        }
+        if(text.indexOf('Access')>-1){
+          el.textContent='Smart Access Control';
+        }
+        if(text.indexOf('Smart Home')>-1){
+          el.textContent='Smart Homes';
+        }
+      });
+
+      // Replace all text content with Axio Ventures content
+      var walker3=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null,false);
+      while((node=walker3.nextNode())){
+        var v=node.nodeValue;
+        if(!v) continue;
+        // Mission
+        if(v.indexOf('Our mission is to provide')>-1||v.indexOf('mission')>-1&&v.length<200){
+          node.nodeValue='To deliver integrated solutions that empower our clients with smart automation, security, and sustainable infrastructure—while maintaining excellence, innovation, and integrity in everything we do.';
+        }
+        // Vision
+        if(v.indexOf('Our vision is to become')>-1||v.indexOf('vision')>-1&&v.length<200){
+          node.nodeValue='To be recognized as a leader in digital transformation and infrastructure development by blending intelligent technology with reliable engineering to build a more secure and efficient future.';
+        }
+        // Aim
+        if(v.indexOf('Our aim is to')>-1||v.indexOf('aim')>-1&&v.length<200){
+          node.nodeValue='To bridge the digital and physical world through smart automation, innovative software, and solid infrastructure—ensuring every client we serve experiences measurable value and long-term success.';
+        }
+        // Quality Services
+        if(v.indexOf('quality')>-1&&v.indexOf('service')>-1&&v.length<150){
+          node.nodeValue='We deliver peace of mind, operational efficiency, and future-ready infrastructure. Each client\'s needs are unique—we listen, analyze, and respond with precision-driven solutions.';
+        }
+        // Personalized Solutions
+        if(v.indexOf('personalized')>-1||v.indexOf('custom')>-1){
+          node.nodeValue='We deliver peace of mind, operational efficiency, and future-ready infrastructure. Each client\'s needs are unique—we listen, analyze, and respond with precision-driven solutions.';
+        }
+        // Innovation Driven
+        if(v.indexOf('innovation')>-1&&v.length<150){
+          node.nodeValue='Building synergy between technology and infrastructure. We\'re not just adapting to the future—we\'re actively shaping it with smart security and sustainable construction.';
+        }
+        // Trusted Expertise
+        if(v.indexOf('expertise')>-1&&v.length<150){
+          node.nodeValue='Spanning residential, commercial, and government sectors. We bring expertise, dedication, and results to every challenge—creating safer, smarter, and more sustainable spaces.';
+        }
+        // Procurement & Construction Services description
+        if(v.indexOf('End-to-end')>-1&&v.length<200){
+          node.nodeValue='End-to-end solutions from sourcing to execution';
+        }
+        if(v.indexOf('Vast supplier')>-1){
+          node.nodeValue='Vast supplier network and experienced project managers';
+        }
+        if(v.indexOf('Focus on quality')>-1){
+          node.nodeValue='Focus on quality, sustainability, and cost-efficiency';
+        }
+        if(v.indexOf('Residential')>-1&&v.indexOf('commercial')>-1){
+          node.nodeValue='Residential, commercial, and industrial expertise';
+        }
+        // Procurement for Government & Corporate Projects
+        if(v.indexOf('We specialize in strategic')>-1||v.indexOf('strategic sourcing')>-1){
+          node.nodeValue='We specialize in strategic sourcing, indenting, and supply of essential equipment and materials for public and private sector projects. Our procurement team ensures timely delivery, regulatory compliance, and cost-effectiveness.';
+        }
+        // Construction & Civil Engineering Services
+        if(v.indexOf('From planning to execution')>-1){
+          node.nodeValue='From planning to execution, we handle residential, commercial, and public infrastructure projects. This includes civil works, building construction, OFC laying, electrical infrastructure, smart city components, and more.';
+        }
+        // Telecom Infrastructure Development
+        if(v.indexOf('We support telecom')>-1){
+          node.nodeValue='We support telecom providers with infrastructure rollouts including pole installations, cable ducting, tower construction, and fiber optic laying. Our work meets national telecom standards and regulatory compliances.';
+        }
+        // Turnkey Solutions
+        if(v.indexOf('Clients often need')>-1){
+          node.nodeValue='Clients often need end-to-end services—and we deliver. From planning and procurement to construction and after-sales support, we act as a single-window partner for diverse needs.';
+        }
+        // Tech section heading
+        if(v.indexOf('Tech isn\'t a luxury')>-1){
+          node.nodeValue='Tech isn\'t a luxury anymore—it\'s a necessity. We help you stay ahead, stay secure, and stay smart.';
+        }
+        // Security Alarm Systems
+        if(v.indexOf('Advanced intrusion')>-1){
+          node.nodeValue='Advanced intrusion detection and alarm systems for comprehensive security coverage.';
+        }
+        // Smart AI Cameras
+        if(v.indexOf('Intelligent surveillance')>-1){
+          node.nodeValue='Intelligent surveillance with AI-powered analytics and real-time monitoring.';
+        }
+        // Electric Fencing
+        if(v.indexOf('High-security perimeter')>-1){
+          node.nodeValue='High-security perimeter protection with advanced electric fencing solutions.';
+        }
+        // Smart Access Control
+        if(v.indexOf('Biometric and card')>-1){
+          node.nodeValue='Biometric and card-based access control systems for enhanced security.';
+        }
+        // Smart Homes
+        if(v.indexOf('Complete home automation')>-1){
+          node.nodeValue='Complete home automation solutions for modern, connected living.';
+        }
+      }
+    }
+
+    // 11. Replace Services pages content with Axio Ventures content
+    if(IS_SERVICES){
+      document.querySelectorAll('h1, h2, h3').forEach(function(el){
+        var text=el.textContent||'';
+        // Replace plan names with service names
+        if(text.indexOf('Standard plan')>-1||text.indexOf('Standard Plan')>-1){
+          el.textContent='Defense & Government Procurement';
+        }
+        if(text.indexOf('Expert Plan')>-1||text.indexOf('Expert plan')>-1){
+          el.textContent='Turnkey Procurement Solutions';
+        }
+        if(text.indexOf('Plans')>-1||text.indexOf('Choose')>-1){
+          el.textContent='Comprehensive Solutions for Every Need';
+        }
+      });
+
+      // Replace service descriptions
+      var walker4=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null,false);
+      while((node=walker4.nextNode())){
+        var v=node.nodeValue;
+        if(!v) continue;
+        // Defense & Government Procurement description
+        if(v.indexOf('Standard')>-1&&v.indexOf('plan')>-1&&v.length<300){
+          node.nodeValue='Strategic sourcing, compliance assurance, and risk-managed acquisition for public sector institutions.';
+        }
+        // Turnkey Procurement description
+        if(v.indexOf('Expert')>-1&&v.indexOf('plan')>-1&&v.length<300){
+          node.nodeValue='Fully managed procurement processes from planning to delivery.';
+        }
+        // Technology Solutions
+        if(v.indexOf('technology')>-1&&v.indexOf('solution')>-1&&v.length<200){
+          node.nodeValue='Global sourcing of specialized equipment with expert integration.';
+        }
+        // Smart Security
+        if(v.indexOf('security')>-1&&v.indexOf('smart')>-1&&v.length<200){
+          node.nodeValue='Cutting-edge systems including smart surveillance, alarms, automation, and energy solutions.';
+        }
+      }
+
+      // Replace feature/benefit sections
+      document.querySelectorAll('li, p').forEach(function(el){
+        var text=el.textContent||'';
+        if(text.indexOf('Unparalleled')>-1){
+          el.textContent='Years of experience in procurement & technology';
+        }
+        if(text.indexOf('End-to-End')>-1){
+          el.textContent='From strategy to implementation';
+        }
+        if(text.indexOf('Tailor-Made')>-1){
+          el.textContent='Customized for your challenges';
+        }
+        if(text.indexOf('Cost-Effective')>-1){
+          el.textContent='Maximum efficiency, quality assured';
+        }
+        if(text.indexOf('Innovative')>-1&&text.indexOf('Technologies')>-1){
+          el.textContent='Smart security, automation, IT infrastructure';
+        }
+        if(text.indexOf('100%')>-1&&text.indexOf('Satisfaction')>-1){
+          el.textContent='Proven track record of success';
+        }
+      });
+    }
   }
 
-  function runAll(){fix();ensureHeroVideo();removeHomeOnlySections();}
+  function runAll(){
+    console.log('ApexFX patch running...');
+    fix();
+    ensureHeroVideo();
+    removeHomeOnlySections();
+    // Force removal every time
+    setTimeout(fix,100);
+    setTimeout(fix,500);
+    setTimeout(fix,1000);
+    setTimeout(fix,2000);
+    console.log('ApexFX patch completed');
+  }
+
+  // Continuous cleanup interval to catch React re-renders
+  setInterval(function(){
+    fix();
+  },3000);
 
   runAll();
   document.addEventListener('DOMContentLoaded',runAll);
   window.addEventListener('load',runAll);
-  [50,150,400,800,1500].forEach(function(t){setTimeout(runAll,t);});
+  [50,150,400,800,1500,3000,5000].forEach(function(t){setTimeout(runAll,t);});
 
   try{
     new MutationObserver(function(){runAll();})
