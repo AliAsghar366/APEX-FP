@@ -1,15 +1,9 @@
 (function(){
-  console.log('ApexFX patch script loaded');
+  console.log('Axio Ventures patch script loaded');
   
-  // Immediate visual confirmation that script is running
-  document.title='[PATCHED] '+document.title;
-  
-  // Block leftover FXIFY tracking/ads infrastructure (GTM, Google Ads conversion,
+  // Block leftover tracking/ads infrastructure (GTM, Google Ads conversion,
   // DoubleClick, Microsoft Clarity, TikTok Pixel, Twitter Ads, Intercom widget).
-  // These still fire on every page view and send Axio Ventures' visitor data to
-  // FXIFY's own analytics/ad accounts — and the failed/slow external connection
-  // attempts were a major contributor to page load time.
-  var BLOCKED_HOSTS=['gtm.fxifyfutures.com','googletagmanager.com','google-analytics.com',
+  var BLOCKED_HOSTS=['googletagmanager.com','google-analytics.com',
     'doubleclick.net','google.com/ccm','analytics.tiktok.com','ads-twitter.com',
     'analytics.twitter.com','t.co/i/','clarity.ms','intercom.io'];
   function isBlocked(url){
@@ -216,7 +210,7 @@
     });
 
     // 3. Remove backend-linked buttons
-    ['a[href*="trader/register"]','a[href*="trader/login"]','a[href*="trustpilot.com"]','a[href*="discord.com"]','a[href*="intercom.help"]','a[href="/academy"]','a[href="https://app.fxifyfutures.com/"]'].forEach(function(sel){
+    ['a[href*="trader/register"]','a[href*="trader/login"]','a[href*="trustpilot.com"]','a[href*="discord.com"]','a[href*="intercom.help"]','a[href="/academy"]'].forEach(function(sel){
       document.querySelectorAll(sel).forEach(function(a){
         var el=a.closest('button')||a;
         if(el.parentNode) el.parentNode.removeChild(el);
@@ -377,8 +371,8 @@
       var v=node.nodeValue;
       if(!v) continue;
       // Brand names
-      if(v.indexOf('ApexFX')>-1||v.indexOf('APEXFX')>-1||v.indexOf('FXIFY')>-1||v.indexOf('Fxify')>-1||v.indexOf('ApexFP')>-1||v.indexOf('APEXFP')>-1){
-        v=v.replace(/ApexFX/g,'Axio Ventures').replace(/APEXFX/g,'Axio Ventures').replace(/FXIFY/g,'Axio Ventures').replace(/Fxify/g,'Axio Ventures').replace(/ApexFP/g,'Axio Ventures').replace(/APEXFP/g,'Axio Ventures');
+      if(v.indexOf('ApexFX')>-1||v.indexOf('APEXFX')>-1||v.indexOf('ApexFP')>-1||v.indexOf('APEXFP')>-1){
+        v=v.replace(/ApexFX/g,'Axio Venturez').replace(/APEXFX/g,'Axio Venturez').replace(/ApexFP/g,'Axio Venturez').replace(/APEXFP/g,'Axio Venturez');
         node.nodeValue=v;
       }
       // Nav labels
