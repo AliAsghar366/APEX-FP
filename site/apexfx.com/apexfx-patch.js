@@ -1,4 +1,6 @@
 (function(){
+  console.log('ApexFX patch script loaded');
+  
   // Block leftover FXIFY tracking/ads infrastructure (GTM, Google Ads conversion,
   // DoubleClick, Microsoft Clarity, TikTok Pixel, Twitter Ads, Intercom widget).
   // These still fire on every page view and send Axio Ventures' visitor data to
@@ -632,26 +634,45 @@
     fix();
     ensureHeroVideo();
     removeHomeOnlySections();
-    // Force removal every time
-    setTimeout(fix,100);
-    setTimeout(fix,500);
-    setTimeout(fix,1000);
-    setTimeout(fix,2000);
     console.log('ApexFX patch completed');
   }
-
-  // Continuous cleanup interval to catch React re-renders
+  
+  // Run immediately
+  runAll();
+  
+  // Run on DOM ready
+  document.addEventListener('DOMContentLoaded',function(){
+    console.log('ApexFX patch running on DOMContentLoaded');
+    runAll();
+  });
+  
+  // Run on window load
+  window.addEventListener('load',function(){
+    console.log('ApexFX patch running on window load');
+    runAll();
+  });
+  
+  // Run repeatedly to catch React re-renders
+  [50,150,400,800,1500,3000,5000].forEach(function(t){
+    setTimeout(function(){
+      console.log('ApexFX patch running at timeout '+t);
+      runAll();
+    },t);
+  });
+  
+  // Run every 3 seconds continuously
   setInterval(function(){
-    fix();
+    console.log('ApexFX patch running in interval');
+    runAll();
   },3000);
 
-  runAll();
-  document.addEventListener('DOMContentLoaded',runAll);
-  window.addEventListener('load',runAll);
-  [50,150,400,800,1500,3000,5000].forEach(function(t){setTimeout(runAll,t);});
-
   try{
-    new MutationObserver(function(){runAll();})
+    new MutationObserver(function(){
+      console.log('ApexFX patch running on DOM mutation');
+      runAll();
+    })
       .observe(document.documentElement,{childList:true,subtree:true,attributes:false});
-  }catch(e){}
+  }catch(e){
+    console.log('MutationObserver error:',e);
+  }
 })();
