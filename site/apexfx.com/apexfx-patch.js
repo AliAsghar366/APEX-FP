@@ -1,6 +1,9 @@
 (function(){
   console.log('ApexFX patch script loaded');
   
+  // Immediate visual confirmation that script is running
+  document.title='[PATCHED] '+document.title;
+  
   // Block leftover FXIFY tracking/ads infrastructure (GTM, Google Ads conversion,
   // DoubleClick, Microsoft Clarity, TikTok Pixel, Twitter Ads, Intercom widget).
   // These still fire on every page view and send Axio Ventures' visitor data to
